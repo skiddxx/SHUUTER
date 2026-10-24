@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07110f">
+    <meta name="description" content="A cinematic, playable football penalty shootout.">
+    <title>Penalty Night — Football Shootout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <canvas id="stadium" aria-label="Animated football pitch and penalty shootout"></canvas>
+    <div class="screen-vignette" aria-hidden="true"></div>
+    <div class="ambient-grain" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Penalty Night home">
+        <span class="brand-mark">P<span>•</span></span>
+        <span class="brand-copy">PENALTY <b>NIGHT</b></span>
+      </a>
+      <div class="match-label"><span class="live-dot"></span><span id="match-status">EXHIBITION MATCH</span></div>
+      <button class="icon-button sound-toggle" id="sound-toggle" type="button" aria-label="Turn sound off">♫ <span>SOUND ON</span></button>
+    </header>
+
+    <main>
+      <section class="scoreboard" id="scoreboard" aria-label="Live scoreboard" hidden>
+        <div class="team-score player-score">
+          <div class="team-crest" id="player-crest">✦</div>
+          <div class="team-copy"><span id="player-name-score">HOME</span><small>PLAYER</small></div>
+          <strong class="points" id="player-points">0</strong>
+          <div class="score-stats"><span><b id="player-goals">0</b> G</span><i></i><span><b id="player-saves">0</b> S</span></div>
+        </div>
+        <div class="score-center"><span id="round-label">ROUND 01 / 05</span><b>VS</b></div>
+        <div class="team-score opponent-score">
+          <div class="team-crest" id="opponent-crest">◆</div>
+          <div class="team-copy"><span id="opponent-name-score">AWAY</span><small>OPPONENT</small></div>
+          <strong class="points" id="opponent-points">0</strong>
+          <div class="score-stats"><span><b id="opponent-goals">0</b> G</span><i></i><span><b id="opponent-saves">0</b> S</span></div>
+        </div>
+      </section>
+
+      <section class="menu-card glass-card" id="menu-screen">
+        <div class="eyebrow"><span class="eyebrow-line"></span> THE MOMENT IS YOURS</div>
+        <h1>ONE KICK.<br><span>ALL THE GLORY.</span></h1>
+        <p class="menu-description">The lights are on. The crowd is holding its breath.<br>Step up and decide the shootout.</p>
+        <div class="select-row">
+          <label class="select-field"><span>YOUR NAME</span>
+            <input id="player-name" type="text" placeholder="Enter your name" maxlength="24" autocomplete="nickname" required>
+          </label>
+          <span class="select-vs">VS</span>
+          <div class="select-field opponent-choice"><span>YOUR OPPONENT</span><strong>Random team</strong></div>
+        </div>
+        <button class="primary-button" id="play-button" type="button"><span>PLAY MATCH</span><b>↗</b></button>
+        <div class="menu-foot"><span>5 PENALTIES EACH</span><i></i><span>SUDDEN DEATH</span><i></i><span>NO MERCY</span></div>
+      </section>
+
+      <div class="match-context" id="match-context" hidden>
+        <div class="context-icon" id="context-icon">01</div>
+        <div><span class="context-kicker" id="context-kicker">YOUR TURN · PENALTY</span><h2 id="context-title">Pick your spot.</h2></div>
+      </div>
+
+      <section class="control-panel glass-card" id="control-panel" hidden aria-live="polite">
+        <div class="panel-copy"><span id="control-label">AIM YOUR SHOT</span><small id="control-hint">Pick a corner, then take your shot.</small></div>
+        <div id="shoot-controls" class="shoot-controls">
+          <div class="direction-grid" role="group" aria-label="Choose where to shoot">
+            <button class="direction-button" type="button" data-zone="top-left"><span>↖</span><small>TOP LEFT</small></button>
+            <button class="direction-button" type="button" data-zone="top-center"><span>↑</span><small>TOP CENTER</small></button>
+            <button class="direction-button" type="button" data-zone="top-right"><span>↗</span><small>TOP RIGHT</small></button>
+            <button class="direction-button" type="button" data-zone="bottom-left"><span>↙</span><small>LOW LEFT</small></button>
+            <button class="direction-button" type="button" data-zone="bottom-center"><span>↓</span><small>LOW CENTER</small></button>
+            <button class="direction-button" type="button" data-zone="bottom-right"><span>↘</span><small>LOW RIGHT</small></button>
+          </div>
+          <button class="action-button" id="shoot-button" type="button" disabled><span>TAKE THE SHOT</span><b>↗</b></button>
+        </div>
+        <div id="keeper-controls" class="keeper-controls" hidden>
+          <div class="dive-directions" role="group" aria-label="Choose where to dive">
+            <button class="dive-button" type="button" data-dive="left"><span>←</span>LEFT</button>
+            <button class="dive-button selected" type="button" data-dive="center"><span>↑</span>CENTER</button>
+            <button class="dive-button" type="button" data-dive="right"><span>→</span>RIGHT</button>
+          </div>
+          <div class="height-choice" role="group" aria-label="Choose dive height">
+            <button class="height-button selected" type="button" data-height="high">HIGH</button>
+            <button class="height-button" type="button" data-height="low">LOW</button>
+          </div>
+          <button class="action-button" id="dive-button" type="button"><span>COMMIT TO THE DIVE</span><b>↗</b></button>
+        </div>
+      </section>
+
+      <section class="result-card glass-card" id="result-card" hidden aria-live="assertive">
+        <span class="result-kicker" id="result-kicker">PENALTY RESULT</span>
+        <h2 id="result-title">GOAL!</h2>
+        <p id="result-description">Straight into the back of the net.</p>
+        <button class="primary-button" id="continue-button" type="button"><span>CONTINUE</span><b>↗</b></button>
+      </section>
+
+      <section class="result-card final-card glass-card" id="final-card" hidden aria-live="assertive">
+        <span class="result-kicker">FULL TIME · SHOOTOUT COMPLETE</span>
+        <h2 id="final-title">YOU WIN.</h2>
+        <p id="final-description"></p>
+        <div class="final-stats" id="final-stats"></div>
+        <div class="final-actions">
+          <button class="primary-button" id="play-again-button" type="button"><span>PLAY AGAIN</span><b>↗</b></button>
+          <button class="secondary-button" id="menu-button" type="button">MAIN MENU</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bottom-hint" id="bottom-hint" hidden><span>KEYBOARD</span> ARROWS TO AIM <i>·</i> ENTER TO SHOOT <i>·</i> <span>HIGH / LOW</span> W / S</footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="game.js"></script>
+  </body>
+</html>
